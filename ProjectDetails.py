@@ -12,45 +12,33 @@ def threadDataHandling(fileName):
         query=db.select([project])
 
         df=pd.read_csv(fileName)
-        insertDetails=df[['PROJECT_ID','ACCOUNT_ID','PROJECT_NAME','START_DATE','END_DATE']] [df['MODE'] =='I']
 
+        insertDetails=df[['PROJECT_ID','ACCOUNT_ID','PROJECT_NAME','START_DATE','END_DATE']] [df['MODE'] =='I']
         for index,row in insertDetails.iterrows():
                 query=db.insert(project).values(PROJECT_ID=row['PROJECT_ID'],ACCOUNT_ID=row['ACCOUNT_ID'],PROJECT_NAME=row['PROJECT_NAME'],START_DATE=row['START_DATE'],END_DATE=row['END_DATE'],TIME_UPDATED=datetime.now())
                 try:
                         result=myConnection.execute(query)
                 except Exception as err: 
                         print("Input Invalid.Please Check the Input File")
-                except:
-                        print("Record Already present")
 
         updateDetails=df[['PROJECT_ID','ACCOUNT_ID','PROJECT_NAME','START_DATE','END_DATE']] [df['MODE'] =='U']
-
         for index,row in updateDetails.iterrows():
                 query=db.update(project).values(ACCOUNT_ID=row['ACCOUNT_ID'],PROJECT_NAME=row['PROJECT_NAME'],START_DATE=row['START_DATE'],END_DATE=row['END_DATE'],TIME_UPDATED=datetime.now())
                 query=query.where(project.columns.PROJECT_ID==row['PROJECT_ID'])
                 try:
                         result=myConnection.execute(query)
-                        if result.rowcount == 0:
-                                raise(ValueError)
-                
-                except ValueError:
-                        print("Invalid Input provided for Updation. Please Check the Input File")
-                        print(row)
-                
-
+                except Exception as err: 
+                        print(str(err))
 
         deleteDetails=df[['PROJECT_ID','ACCOUNT_ID','PROJECT_NAME','START_DATE','END_DATE']] [df['MODE'] =='D']
-
         for index,row in deleteDetails.iterrows():
                 query=db.delete(project).where(project.columns.PROJECT_ID==row['PROJECT_ID'])
                 try:
                         result=myConnection.execute(query)
                         if result.rowcount == 0:
                                 raise(ValueError)
-                
-                except ValueError:
-                        print("Invalid Input provided for Deletion. Please Check the Input File")
-                        print(row)
+                except Exception as err: 
+                        print(str(err))
 
 if __name__ == "__main__":
         listOfThreads=[]

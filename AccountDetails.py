@@ -13,7 +13,6 @@ def threadDataHandling(fileName):
 
         df=pd.read_csv(fileName)
         insertDetails=df[['ACCOUNT_ID','ACCOUNT_NAME']] [df['MODE'] =='I']
-        #print(insertDetails)
 
         for index,row in insertDetails.iterrows():
                 query=db.insert(account).values(ACCOUNT_ID=row['ACCOUNT_ID'],ACCOUNT_NAME=row['ACCOUNT_NAME'],TIME_UPDATED=datetime.now())
@@ -21,11 +20,10 @@ def threadDataHandling(fileName):
                         result=myConnection.execute(query)
                 except Exception as err: 
                         print(str(err))
-                        print(row)
-                
+                                        
 
         updateDetails=df[['ACCOUNT_NAME','ACCOUNT_ID']] [df['MODE'] =='U']
-        #print(updateDetails)
+        
 
         for index,row in updateDetails.iterrows():
                 query=db.update(account).values(ACCOUNT_NAME=row['ACCOUNT_NAME'],TIME_UPDATED=datetime.now()).where(account.columns.ACCOUNT_ID==row['ACCOUNT_ID'])
@@ -35,7 +33,7 @@ def threadDataHandling(fileName):
                         print(str(err))
 
         deleteDetails=df[['ACCOUNT_NAME','ACCOUNT_ID']] [df['MODE'] =='D']
-        #print(deleteDetails)
+        
 
         for index,row in deleteDetails.iterrows():
                 query=db.delete(account).where(account.columns.ACCOUNT_ID==row['ACCOUNT_ID'])

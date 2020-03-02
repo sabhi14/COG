@@ -12,8 +12,8 @@ def threadDataHandling(fileName):
         query=db.select([resource])
 
         df=pd.read_csv(fileName)
+        
         insertDetails=df[['RESOURCE_ID','PROJECT_ID','RESOURCE_NAME','TECHNOLOGY','DOJ']] [df['MODE'] =='I']
-
         for index,row in insertDetails.iterrows():
                 query=db.insert(resource).values(PROJECT_ID=row['PROJECT_ID'],RESOURCE_ID=row['RESOURCE_ID'],RESOURCE_NAME=row['RESOURCE_NAME'],TECHNOLOGY=row['TECHNOLOGY'],DOJ=row['DOJ'],TIME_UPDATED=datetime.now())
                 try:
@@ -23,29 +23,21 @@ def threadDataHandling(fileName):
                 
 
         updateDetails=df[['RESOURCE_ID','PROJECT_ID','RESOURCE_NAME','TECHNOLOGY','DOJ']] [df['MODE'] =='U']
-
         for index,row in updateDetails.iterrows():
                 query=db.update(resource).values(PROJECT_ID=row['PROJECT_ID'],RESOURCE_NAME=row['RESOURCE_NAME'],TECHNOLOGY=row['TECHNOLOGY'],DOJ=row['DOJ'],TIME_UPDATED=datetime.now())
                 query=query.where(resource.columns.RESOURCE_ID == row['RESOURCE_ID'])
                 try:
                         result=myConnection.execute(query)        
-                        if result.rowcount == 0:
-                                raise(ValueError)
-                except ValueError:
-                        print("Invalid Input provided for Updation. Please Check the file")
-                        print(row)
+                except Exception as err: 
+                        print(str(err))
 
         deleteDetails=df[['RESOURCE_ID','PROJECT_ID','RESOURCE_NAME','TECHNOLOGY','DOJ']] [df['MODE'] =='D']
-
         for index,row in deleteDetails.iterrows():
                 query=db.delete(resource).where(resource.columns.RESOURCE_ID == row['RESOURCE_ID'])
                 try:
                         result=myConnection.execute(query)        
-                        if result.rowcount == 0:
-                                raise(ValueError)
-                except ValueError:
-                        print("Invalid Input provided for Deletion. Please Check the file")
-                        print(row)
+                except Exception as err: 
+                        print(str(err))
 
 
 if __name__ == "__main__":
